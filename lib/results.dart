@@ -20,15 +20,14 @@ class _ResultsState extends State<Results> {
   double widthAnswer1 = 1;
   double widthAnswer2 = 1;
 
-  void calcWidth() {
+  calcWidth() {
+    counter++;
     if (widget.answer == answer1) {
-      counter++;
       counterAnswer1++;
     } else {
-      counter++;
       counterAnswer2++;
     }
-    double testAnswer1 = (100 / counterAnswer1 * counter);
+    double testAnswer1 = ((100 / counterAnswer1) * counter);
     double testAnswer2 = (100 / counterAnswer2 * counter);
     widthAnswer1 = MediaQuery.of(context).size.width * testAnswer1;
     widthAnswer2 = MediaQuery.of(context).size.width * testAnswer2;
@@ -38,11 +37,11 @@ class _ResultsState extends State<Results> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    calcWidth;
   }
 
   @override
   Widget build(BuildContext context) {
+    //calcWidth();
     return Container(
       decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -58,6 +57,7 @@ class _ResultsState extends State<Results> {
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 question,
@@ -66,8 +66,22 @@ class _ResultsState extends State<Results> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              Answer(answer: answer1, widthAnswer: widthAnswer1),
-              Answer(answer: answer2, widthAnswer: widthAnswer2),
+              const SizedBox(
+                height: 120,
+              ),
+              ChartLine(
+                title: answer1,
+                rate: 1,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              ChartLine(
+                title: answer2,
+                rate: 0.1,
+              ),
+              //Answer(answer: answer1, widthAnswer: widthAnswer1),
+              //Answer(answer: answer2, widthAnswer: widthAnswer2),
             ],
           ),
         ),
@@ -76,6 +90,57 @@ class _ResultsState extends State<Results> {
   }
 }
 
+class ChartLine extends StatelessWidget {
+  const ChartLine({Key? key, required this.rate, required this.title})
+      : assert(rate > 0),
+        assert(rate <= 1),
+        super(key: key);
+
+  final double rate;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final lineWidget = constraints.maxWidth * rate;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              constraints: BoxConstraints(minWidth: lineWidget),
+              child: IntrinsicWidth(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontSize: 18, color: Colors.amber),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                height: 60,
+                width: lineWidget,
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+/*
 class Answer extends StatelessWidget {
   const Answer({Key? key, required this.answer, required this.widthAnswer})
       : super(key: key);
@@ -94,15 +159,14 @@ class Answer extends StatelessWidget {
           color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: TextButton(
-            onPressed: (() {}),
-            child: Text(
-              answer,
-              style: const TextStyle(color: Color.fromARGB(255, 16, 100, 168)),
-            ),
+          child: Text(
+            answer,
+            style: const TextStyle(color: Color.fromARGB(255, 16, 100, 168)),
           ),
         ),
       ),
     );
   }
 }
+
+*/

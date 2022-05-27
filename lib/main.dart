@@ -38,6 +38,7 @@ class _HomeState extends State<Home> {
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 question,
@@ -59,14 +60,16 @@ class _HomeState extends State<Home> {
   }
 }
 
-class Answer extends StatelessWidget {
-  const Answer({
-    Key? key,
-    required this.answer,
-  }) : super(key: key);
+class Answer extends StatefulWidget {
+  const Answer({Key? key, required this.answer}) : super(key: key);
 
   final String answer;
 
+  @override
+  State<Answer> createState() => _AnswerState();
+}
+
+class _AnswerState extends State<Answer> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -79,21 +82,40 @@ class Answer extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: ((context) => Results(answer: answer)),
-                ),
-              );
-            },
+            onPressed: navigate,
             child: Text(
-              answer,
+              widget.answer,
               style: const TextStyle(color: Color.fromARGB(255, 16, 100, 168)),
             ),
           ),
         ),
       ),
     );
+  }
+
+  navigate() {
+    if (widget.answer == 'Yes') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: ((context) => Results(answer: widget.answer)),
+        ),
+      );
+    } else {
+      AlertDialog alert =  AlertDialog(
+        title: const Text('Wrong answer!'),
+        content: const Text('Please try again, tip: the answer is YES!!'),
+        actions: [
+          TextButton(onPressed: (){
+            Navigator.pop(context); 
+          }, child:const  Text('Ok, I will press yes'))
+        ],
+      );
+      showDialog(
+          context: context,
+          builder: (context) {
+            return alert;
+          });
+    }
   }
 }
